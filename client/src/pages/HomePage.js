@@ -78,13 +78,20 @@ const HomePage = () => {
     try {
       setLoading(true);
       const user = JSON.parse(sessionStorage.getItem("user"));
-      const postData = {
+      let postData = {
         userid: user._id,
         frequency,
         selectedDate,
         type,
       };
       console.log(postData);
+      if (frequency !== "custom") {
+        postData = {
+          userid: user._id,
+          frequency,
+          type,
+        };
+      }
       const response = await axios.post(
         "/transactions/getAllTransaction",
         postData

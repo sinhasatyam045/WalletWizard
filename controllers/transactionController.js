@@ -17,7 +17,7 @@ const getAllTransaction = async (req, res) => {
             userid,
             type: type !== "all" ? type : "all",
           }
-        : req.body.userid
+        : req.body.userid && frequency === "custom"
         ? {
             date: {
               $gte: selectedDate[0],
