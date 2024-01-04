@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layouts/Layout";
 import CustomModal from "../components/CustomModal";
+import RiseLoader from "react-spinners/RiseLoader";
+
 import axios from "axios";
 import { Table, DatePicker } from "antd";
 import moment from "moment";
@@ -11,8 +13,8 @@ const HomePage = () => {
   const [showModal, setshowModal] = useState(false);
   const [frequency, setFrequency] = useState("7");
   const [selectedDate, setSelectedDate] = useState([]);
-  const [type, setType] = useState("all");
-  const [loading, setLoading] = useState(false);
+   const [loading, setLoading] = useState(false);
+   const[type,setType]=useState("all");
   const [transactionData, setTransactionData] = useState({
     amount: "",
     type: "income",
@@ -54,6 +56,7 @@ const HomePage = () => {
   const closeModal = () => {
     setshowModal(false);
   };
+
   //storing transaction data into the database
   const submitHandler = async (e) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -83,20 +86,20 @@ const HomePage = () => {
         frequency,
         selectedDate,
         type,
+        
       };
       console.log(postData);
-      if (frequency !== "custom") {
-        postData = {
-          userid: user._id,
-          frequency,
-          type,
-        };
+      if (frequency === "custom") {
+        postData.selectedDate = selectedDate;
       }
+      console.log("PostData",postData);
       const response = await axios.post(
         "/transactions/getAllTransaction",
         postData
       );
+      console.log('Response',response.data);
       setAllTransactions(response.data);
+      console.log(setAllTransactions);
 
       console.log("Response", response);
 
@@ -109,7 +112,7 @@ const HomePage = () => {
   //getting transaction
   useEffect(() => {
     getTransactions();
-  }, [frequency, selectedDate, type]);
+  }, [frequency, selectedDate,type]);
   //state for transaction data
 
   const handleDateChange = (date, dateString) => {

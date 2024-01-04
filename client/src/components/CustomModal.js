@@ -18,9 +18,11 @@ const CustomModal = (props) => {
       marginRight: "-50%",
       width: "30%",
       transform: "translate(-50%, -50%)",
-      backgroundColor: "#C0C0C0",
+      backgroundColor: "#DCDCDC",
       padding: "2px",
-      borderRadius: "15px",
+      boxShadow: "0 0 2rem rgba(0, 0, 0, 0.2)", 
+      
+      
     },
   };
   // console.log(props);

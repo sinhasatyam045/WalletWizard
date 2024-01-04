@@ -10,24 +10,30 @@ const getAllTransaction = async (req, res) => {
 
     // console.log("Frequency", frequency);
 
-    const query =
-      req.body.userid && frequency !== "custom"
-        ? {
-            date: { $gt: moment().subtract(Number(frequency), "d").toDate() },
-            userid,
-            type: type !== "all" ? type : "all",
-          }
-        : req.body.userid && frequency === "custom"
-        ? {
-            date: {
-              $gte: selectedDate[0],
-              $lte: selectedDate[1],
-            },
-            userid,
+    let query = {};
 
-            ...(type !== "all" && { type }),
-          }
-        : {};
+    if (userid) {
+      if (frequency !== 'custom') {
+        query = {
+          date: { $gt: moment().subtract(Number(frequency), 'd').toDate(),$lte: new Date(), },
+          userid,
+          ...(type !== 'all' && { type }), 
+        };
+      } else if (frequency === 'custom') {
+        query = {
+          date: {
+            $gte: selectedDate[0],
+            $lte: selectedDate[1],
+          },
+          userid,
+        };
+
+        if (type && type !== 'all') {
+          query.type = type;
+        }
+      }
+    }
+      
 
     console.log("Query", query);
 
@@ -47,7 +53,6 @@ const addTransaction = async (req, res) => {
     console.log(req.body);
     console.log("NewTransaction", newTransaction);
     await newTransaction.save();
-
     res.status(201).send("Transaction created");
   } catch (error) {
     console.log(error);
@@ -56,3 +61,24 @@ const addTransaction = async (req, res) => {
 };
 
 module.exports = { getAllTransaction, addTransaction };
+
+
+
+
+// req.body.userid && frequency !== "custom"
+//         ? {
+//             date: { $gt: moment().subtract(Number(frequency), "d").toDate() },
+//             userid,
+//             type: type !== "all" ? type : "all",
+//           }
+//         : req.body.userid && frequency === "custom"
+//         ? {
+//             date: {
+//               $gte: selectedDate[0],
+//               $lte: selectedDate[1],
+//             },
+//             userid,
+
+//             ...(type !== "all" && { type }),
+//           }
+//         : {};
