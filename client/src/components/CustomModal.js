@@ -1,6 +1,8 @@
 import moment, { isMoment } from "moment";
-import React from "react";
+import React, { useEffect } from "react";
+
 import Modal from "react-modal";
+
 const CustomModal = (props) => {
   const {
     showModal,
@@ -8,6 +10,10 @@ const CustomModal = (props) => {
     transactionData,
     setTransactionData,
     submitHandler,
+    editable,
+    setEditTransactionData,
+
+    editTransactionData,
   } = props;
   const customStyles = {
     content: {
@@ -20,11 +26,13 @@ const CustomModal = (props) => {
       transform: "translate(-50%, -50%)",
       backgroundColor: "#DCDCDC",
       padding: "2px",
-      boxShadow: "0 0 2rem rgba(0, 0, 0, 0.2)", 
-      
-      
+      boxShadow: "0 0 2rem rgba(0, 0, 0, 0.2)",
     },
   };
+  useEffect(() => {
+    console.log(transactionData);
+    console.log(editTransactionData);
+  });
   // console.log(props);
   // console.log(showModal);
   // console.log(closeModal);
@@ -43,7 +51,9 @@ const CustomModal = (props) => {
         >
           <div className="p-2 space-y-2">
             <div className="flex justify-between space-y-1">
-              <div className="font-bold text-xl">Add Transaction</div>
+              <div className="font-bold text-xl">
+                {editable ? "Edit Transaction" : "Add Transaction"}
+              </div>
               <button
                 className="bg-blue-500 rounded-md p-2"
                 onClick={closeModal}
@@ -57,25 +67,41 @@ const CustomModal = (props) => {
                   type="text"
                   placeholder="amount"
                   className="p-2 border border-gray-500 outline-none space-y-1 rounded-lg"
-                  value={transactionData.amount}
-                  onChange={(e) =>
-                    setTransactionData({
-                      ...transactionData,
-                      amount: e.target.value,
-                    })
+                  value={
+                    editable
+                      ? editTransactionData.amount
+                      : transactionData.amount
                   }
-                ></input>
+                  onChange={(e) =>
+                    editable
+                      ? setEditTransactionData({
+                          ...editTransactionData,
+                          amount: e.target.value,
+                        })
+                      : setTransactionData({
+                          ...transactionData,
+                          amount: e.target.value,
+                        })
+                  }
+                />
                 <div className="flex flex-col space-y-2">
                   <label className="">Type</label>
                   <select
                     className="rounded-md"
                     onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        type: e.target.value,
-                      })
+                      editable
+                        ? setEditTransactionData({
+                            ...editTransactionData,
+                            type: e.target.value,
+                          })
+                        : setTransactionData({
+                            ...transactionData,
+                            type: e.target.value,
+                          })
                     }
-                    value={transactionData.type}
+                    value={
+                      editable ? editTransactionData.type : transactionData.type
+                    }
                   >
                     <option value="income">Income</option>
                     <option value="expense">Expense</option>
@@ -85,12 +111,21 @@ const CustomModal = (props) => {
                   <label className="space-y-1">Category</label>
                   <select
                     className="rounded-md"
-                    value={transactionData.category}
+                    value={
+                      editable
+                        ? editTransactionData.category
+                        : transactionData.category
+                    }
                     onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        category: e.target.value,
-                      })
+                      editable
+                        ? setEditTransactionData({
+                            ...editTransactionData,
+                            category: e.target.value,
+                          })
+                        : setTransactionData({
+                            ...transactionData,
+                            category: e.target.value,
+                          })
                     }
                   >
                     <option value="salary">Salary</option>
@@ -110,12 +145,21 @@ const CustomModal = (props) => {
                     type="text"
                     placeholder="reference"
                     className="p-2 border border-gray-500 outline-none space-y-1 rounded-lg"
-                    value={transactionData.reference}
+                    value={
+                      editable
+                        ? editTransactionData.reference
+                        : transactionData.reference
+                    }
                     onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        reference: e.target.value,
-                      })
+                      editable
+                        ? setEditTransactionData({
+                            ...editTransactionData,
+                            reference: e.target.value,
+                          })
+                        : setTransactionData({
+                            ...transactionData,
+                            reference: e.target.value,
+                          })
                     }
                   ></input>
                 </div>
@@ -124,13 +168,19 @@ const CustomModal = (props) => {
                   type="date"
                   placeholder=""
                   className="p-2 border border-gray-500 outline-none space-y-2 rounded-lg"
-                  value={transactionData.date}
+                  value={
+                    editable ? editTransactionData.date : transactionData.date
+                  }
                   onChange={(e) =>
-                    setTransactionData({
-                      ...transactionData,
-                      // date: moment(e.target.value).format("YYYY-MM-DD"),
-                      date: e.target.value,
-                    })
+                    editable
+                      ? setEditTransactionData({
+                          ...editTransactionData,
+                          date: e.target.value,
+                        })
+                      : setTransactionData({
+                          ...transactionData,
+                          date: e.target.value,
+                        })
                   }
                 ></input>
 
@@ -138,12 +188,21 @@ const CustomModal = (props) => {
                   type="text"
                   placeholder="description"
                   className="p-2 border border-gray-500 outline-none space-y-1 rounded-lg"
-                  value={transactionData.description}
+                  value={
+                    editable
+                      ? editTransactionData.description
+                      : transactionData.description
+                  }
                   onChange={(e) =>
-                    setTransactionData({
-                      ...transactionData,
-                      description: e.target.value,
-                    })
+                    editable
+                      ? setEditTransactionData({
+                          ...editTransactionData,
+                          description: e.target.value,
+                        })
+                      : setTransactionData({
+                          ...transactionData,
+                          description: e.target.value,
+                        })
                   }
                 ></input>
                 <div className="flex justify-end">

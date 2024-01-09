@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import Layout from "../components/Layouts/Layout";
 import CustomModal from "../components/CustomModal";
 import RiseLoader from "react-spinners/RiseLoader";
-
+import { UnorderedListOutlined, AreaChartOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from "axios";
 import { Table, DatePicker } from "antd";
 import moment from "moment";
+import Analytics from "../components/Analytics";
 
 const { RangePicker } = DatePicker;
 
@@ -13,8 +14,11 @@ const HomePage = () => {
   const [showModal, setshowModal] = useState(false);
   const [frequency, setFrequency] = useState("7");
   const [selectedDate, setSelectedDate] = useState([]);
-   const [loading, setLoading] = useState(false);
-   const[type,setType]=useState("all");
+  const [viewData, setViewData] = useState('table');
+  const [loading, setLoading] = useState(false);
+  const [editable, setEditable] = useState(false);
+  const [editTransactionData, setEditTransactionData] = useState("");
+  const [type, setType] = useState("all");
   const [transactionData, setTransactionData] = useState({
     amount: "",
     type: "income",
@@ -23,15 +27,15 @@ const HomePage = () => {
     description: "",
     date: "",
   });
+
   const [allTransactions, setAllTransactions] = useState([]);
-  //table data
+
   const columns = [
     {
       title: "Date",
       dataIndex: "date",
       render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
     },
-
     {
       title: "Amount",
       dataIndex: "amount",
@@ -50,6 +54,18 @@ const HomePage = () => {
     },
     {
       title: "Actions",
+      render: (text, record) => {
+        return (
+          <div>
+            <EditOutlined className="text-xl" onClick={() => {
+              setshowModal(true);
+              setEditable(true);
+              setEditTransactionData(record);
+            }} />
+            <DeleteOutlined className="text-xl" onClick={() => { handleDelete(record) }} />
+          </div>
+        )
+      }
     },
   ];
 
@@ -57,7 +73,6 @@ const HomePage = () => {
     setshowModal(false);
   };
 
-  //storing transaction data into the database
   const submitHandler = async (e) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     const userId = user._id;
@@ -65,17 +80,44 @@ const HomePage = () => {
     const newTransactionData = { ...transactionData, userid: userId };
     try {
       setLoading(true);
-      const response = await axios.post(
-        "/transactions/addTransaction",
-        newTransactionData
-      );
-      console.log(response);
-      setLoading(false);
+      if (editable) {
+        const response = await axios.post(
+          "/transactions/editTransaction",
+          editTransactionData, // corrected here
+        );
+        console.log("Response", response);
+        console.log("Edit Request Payload:", newTransactionData);
+
+        console.log(response);
+        setLoading(false);
+      }
+      else {
+        const response = await axios.post(
+          "/transactions/addTransaction",
+          newTransactionData
+        );
+        console.log(response);
+        setLoading(false);
+      }
       closeModal();
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleDelete = async (record) => {
+    try {
+      setLoading(true)
+      await axios.post(
+        "/transactions/deleteTransaction",
+        record, // corrected here
+      );
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+      console.log(error);
+    }
+  }
 
   const getTransactions = async () => {
     try {
@@ -86,22 +128,17 @@ const HomePage = () => {
         frequency,
         selectedDate,
         type,
-        
       };
-      console.log(postData);
+
       if (frequency === "custom") {
         postData.selectedDate = selectedDate;
       }
-      console.log("PostData",postData);
+
       const response = await axios.post(
         "/transactions/getAllTransaction",
         postData
       );
-      console.log('Response',response.data);
       setAllTransactions(response.data);
-      console.log(setAllTransactions);
-
-      console.log("Response", response);
 
       setLoading(false);
     } catch (error) {
@@ -109,17 +146,11 @@ const HomePage = () => {
     }
   };
 
-  //getting transaction
   useEffect(() => {
     getTransactions();
-  }, [frequency, selectedDate,type]);
-  //state for transaction data
+  }, [frequency, selectedDate, type]);
 
   const handleDateChange = (date, dateString) => {
-    // dateString is the formatted date string
-    console.log("Selected date:", dateString);
-
-    // Update the state with the selected date
     setSelectedDate(date);
   };
 
@@ -129,7 +160,6 @@ const HomePage = () => {
         <div>
           <h6>Select Frequency</h6>
           <select
-            //className="rounded-md"
             value={frequency}
             onChange={(e) => setFrequency(e.target.value)}
           >
@@ -150,6 +180,10 @@ const HomePage = () => {
             <option value="expense">Expense</option>
           </select>
         </div>
+        <div>
+          <UnorderedListOutlined className="text-2xl " onClick={() => setViewData('table')} />
+          <AreaChartOutlined className="text-2xl" onClick={() => setViewData('analytics')} />
+        </div>
         <div id="add-new">
           <button
             className="bg-blue-500 p-1 rounded-md"
@@ -165,9 +199,13 @@ const HomePage = () => {
         transactionData={transactionData}
         setTransactionData={setTransactionData}
         submitHandler={submitHandler}
+        editable={editable}
+        editTransactionData={editTransactionData}
+        setEditTransactionData={setEditTransactionData}
       />
       <div id="content">
-        <Table columns={columns} dataSource={allTransactions} />
+        {viewData === 'table' ? <Table columns={columns} dataSource={allTransactions} />
+          : <Analytics allTransactions={allTransactions} />}
       </div>
     </Layout>
   );

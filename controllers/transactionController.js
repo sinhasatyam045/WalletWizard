@@ -5,21 +5,19 @@ const getAllTransaction = async (req, res) => {
   console.log("Request", req.body);
   try {
     const { frequency, userid, selectedDate, type } = req.body;
-    // console.log(selectedDate);
-    // console.log(type);
-
-    // console.log("Frequency", frequency);
-
     let query = {};
 
     if (userid) {
-      if (frequency !== 'custom') {
+      if (frequency !== "custom") {
         query = {
-          date: { $gt: moment().subtract(Number(frequency), 'd').toDate(),$lte: new Date(), },
+          date: {
+            $gt: moment().subtract(Number(frequency), "d").toDate(),
+            $lte: new Date(),
+          },
           userid,
-          ...(type !== 'all' && { type }), 
+          ...(type !== "all" && { type }),
         };
-      } else if (frequency === 'custom') {
+      } else if (frequency === "custom") {
         query = {
           date: {
             $gte: selectedDate[0],
@@ -28,12 +26,11 @@ const getAllTransaction = async (req, res) => {
           userid,
         };
 
-        if (type && type !== 'all') {
+        if (type && type !== "all") {
           query.type = type;
         }
       }
     }
-      
 
     console.log("Query", query);
 
@@ -50,7 +47,6 @@ const getAllTransaction = async (req, res) => {
 const addTransaction = async (req, res) => {
   try {
     const newTransaction = new transactionModel(req.body);
-    console.log(req.body);
     console.log("NewTransaction", newTransaction);
     await newTransaction.save();
     res.status(201).send("Transaction created");
@@ -60,25 +56,33 @@ const addTransaction = async (req, res) => {
   }
 };
 
-module.exports = { getAllTransaction, addTransaction };
+const deleteTransaction = async (req, res) => {
+  const { _id } = req.body;
 
+  try {
+    await transactionModel.findByIdAndDelete(_id);
+    res.status(200).send("Deleted successfully");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
 
+const editTransaction = async (req, res) => {
+  console.log("Request", req.body);
+  try {
+    const { _id, ...updateData } = req.body;
+    const updatedTransaction = await transactionModel.findByIdAndUpdate(
+      _id,
+      updateData,
+      { new: true }
+    );
+    console.log("Updated Transaction", updatedTransaction);
+    res.status(200).send("Edited successfully");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
 
-
-// req.body.userid && frequency !== "custom"
-//         ? {
-//             date: { $gt: moment().subtract(Number(frequency), "d").toDate() },
-//             userid,
-//             type: type !== "all" ? type : "all",
-//           }
-//         : req.body.userid && frequency === "custom"
-//         ? {
-//             date: {
-//               $gte: selectedDate[0],
-//               $lte: selectedDate[1],
-//             },
-//             userid,
-
-//             ...(type !== "all" && { type }),
-//           }
-//         : {};
+module.exports = { getAllTransaction, addTransaction, editTransaction, deleteTransaction };
