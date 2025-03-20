@@ -54,9 +54,9 @@ const HomePage = () => {
     {
       title: "Actions",
       render: (text, record) => (
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-3">
           <EditOutlined 
-            className="text-blue-500 cursor-pointer transition-transform transform hover:scale-110"
+            className="text-blue-500 cursor-pointer transition-all duration-300 transform hover:scale-125 hover:text-blue-600"
             onClick={() => {
               setShowModal(true);
               setEditable(true);
@@ -64,7 +64,7 @@ const HomePage = () => {
             }} 
           />
           <DeleteOutlined 
-            className="text-red-500 cursor-pointer transition-transform transform hover:scale-110"
+            className="text-red-500 cursor-pointer transition-all duration-300 transform hover:scale-125 hover:text-red-600"
             onClick={() => handleDelete(record)} 
           />
         </div>
@@ -158,14 +158,14 @@ const HomePage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-100 p-6 rounded-lg shadow-md">
-        <div id="filter" className="flex justify-between mb-6">
-          <div className="flex flex-col">
-            <h6 className="text-lg font-semibold mb-2">Select Frequency</h6>
+      <div className="bg-gradient-to-b from-gray-50 to-gray-100 p-8 rounded-xl shadow-lg border border-gray-200">
+        <div id="filter" className="flex flex-wrap md:flex-nowrap justify-between items-start gap-6 mb-8">
+          <div className="flex flex-col w-full md:w-auto">
+            <h6 className="text-lg font-semibold mb-2 text-gray-700">Select Frequency</h6>
             <select
               value={frequency}
               onChange={(e) => setFrequency(e.target.value)}
-              className="bg-white border border-gray-300 rounded-md p-2 shadow-sm"
+              className="bg-white border border-gray-300 cursor-pointer rounded-lg p-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
             >
               <option value="7">Last 1 Week</option>
               <option value="30">Last 1 Month</option>
@@ -173,44 +173,48 @@ const HomePage = () => {
               <option value="custom">Custom</option>
             </select>
             {frequency === "custom" && (
-              <RangePicker 
-                value={selectedDate} 
-                onChange={handleDateChange} 
-                className="mt-2"
-              />
+              <div className="mt-3">
+                <RangePicker 
+                  value={selectedDate} 
+                  onChange={handleDateChange} 
+                  className="w-full border border-gray-300 rounded-lg shadow-sm"
+                />
+              </div>
             )}
           </div>
-          <div className="flex flex-col">
-            <h6 className="text-lg font-semibold mb-2">Select Type</h6>
+          
+          <div className="flex flex-col w-full md:w-auto ">
+            <h6 className="text-lg font-semibold mb-2 text-gray-700">Select Type</h6>
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="bg-white border border-gray-300 rounded-md p-2 shadow-sm"
+              className="bg-white border border-gray-300 cursor-pointer rounded-lg p-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
             >
               <option value="all">All</option>
               <option value="income">Income</option>
               <option value="expense">Expense</option>
             </select>
           </div>
-          <div className="flex items-center space-x-4">
-            <UnorderedListOutlined 
-              className="text-2xl cursor-pointer text-gray-600 hover:text-blue-500 transition-colors"
-              onClick={() => setViewData('table')} 
-            />
-            <AreaChartOutlined 
-              className="text-2xl cursor-pointer text-gray-600 hover:text-blue-500 transition-colors"
-              onClick={() => setViewData('analytics')} 
-            />
+          
+          <div className="flex items-center space-x-6 ml-auto mr-4">
+            <div className={`cursor-pointer p-2 rounded-lg transition-all duration-300 ${viewData === 'table' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-blue-500'}`} onClick={() => setViewData('table')}>
+              <UnorderedListOutlined className="text-2xl" />
+            </div>
+            <div className={`cursor-pointer p-2 rounded-lg transition-all duration-300 ${viewData === 'analytics' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-blue-500'}`} onClick={() => setViewData('analytics')}>
+              <AreaChartOutlined className="text-2xl" />
+            </div>
           </div>
+          
           <div id="add-new">
             <button
-              className="bg-blue-500 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-600 transition-colors"
+              className="bg-blue-500 text-white py-2.5 px-5 rounded-lg shadow-md hover:bg-blue-600 active:bg-blue-700 transition-all duration-300 font-medium flex items-center"
               onClick={() => setShowModal(true)}
             >
-              Add New
+              <span className="mr-1">+</span> Add Transaction
             </button>
           </div>
         </div>
+        
         <CustomModal
           showModal={showModal}
           closeModal={closeModal}
@@ -221,16 +225,27 @@ const HomePage = () => {
           editTransactionData={editTransactionData}
           setEditTransactionData={setEditTransactionData}
         />
-        <div id="content" className="mt-6">
+        
+        <div id="content" className="mt-8">
           {viewData === 'table' ? (
-            <Table 
-              columns={columns} 
-              dataSource={allTransactions} 
-              loading={loading} 
-              className="bg-white rounded-lg shadow-md"
-            />
+            <div className="overflow-hidden rounded-xl border border-gray-200">
+              <Table 
+                columns={columns} 
+                dataSource={allTransactions} 
+                loading={loading}
+                pagination={{ 
+                  pageSize: 10,
+                  position: ['bottomCenter'],
+                  className: "pb-4"
+                }}
+                className="bg-white rounded-xl shadow-md"
+                rowClassName="hover:bg-gray-50 transition-colors duration-200"
+              />
+            </div>
           ) : (
-            <Analytics allTransactions={allTransactions} />
+            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+              <Analytics allTransactions={allTransactions} />
+            </div>
           )}
         </div>
       </div>
