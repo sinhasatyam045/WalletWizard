@@ -42,79 +42,100 @@ const Register = () => {
     <>
       <div
         id="register--page"
-        className=" flex items-center justify-center h-screen  "
+        className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4"
       >
         {loading ? (
-          <RiseLoader
-            color={"#0000FF"}
-            loading={loading}
-            size={30}
-            aria-label="Loading Spinner"
-            data-testid="loader"
-          />
+          <div className="p-8 bg-white rounded-lg shadow-xl">
+            <RiseLoader
+              color={"#00BFFF"}
+              loading={loading}
+              size={20}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
+          </div>
         ) : (
-          <form
-            className=" w-[25%] border shadow-2xl space-y-8 p-4 bg-gray-100 rounded-md "
-            onSubmit={(e) => submitHandler(e)}
-          >
-            <div>
-              <h3 className="text-3xl font-bold">Sign up</h3>
-              <h3 className="font-semibold italic">Unlock Financial Magic</h3>
-            </div>
-            <div>
-              <input
-                type="text"
-                placeholder="Name"
-                className="p-2 border border-gray-500 outline-none w-[100%]"
-                value={values.name}
-                onChange={(e) => setValues({ ...values, name: e.target.value })}
-              ></input>
-            </div>
-            <div className="flex flex-col">
-              <input
-                type="email"
-                placeholder="email"
-                className="p-2 border border-gray-500 outline-none"
-                value={values.email}
-                onChange={(e) =>
-                  setValues({ ...values, email: e.target.value })
-                }
-              ></input>
-            </div>
-            <div className="flex flex-col">
-              <input
-                type="password"
-                placeholder="Password (6 characters minimum)"
-                className="p-2 border border-gray-500 outline-none"
-                value={values.password}
-                onChange={(e) =>
-                  setValues({ ...values, password: e.target.value })
-                }
-              ></input>
-            </div>
-            <div className="space-y-1">
-              <div className="text-sm font-extralight">
-                By clicking Accept and Register,you agree to the{" "}
-                <span className="font-bold text-blue-400">terms of Use</span>and
-                the
-                <span className="font-bold text-blue-400">Privacy Policy</span>
-                Wallet Wizard
+          <div className="w-full max-w-md transform transition-all duration-300 hover:shadow-2xl">
+            <form
+              className="bg-white rounded-2xl shadow-xl overflow-hidden"
+              onSubmit={(e) => submitHandler(e)}
+            >
+              {/* Header Section */}
+              <div className="bg-gradient-to-r from-green-400 to-blue-500 p-8 text-white">
+                <h3 className="text-3xl font-bold tracking-wide">Create Account</h3>
+                <p className="mt-2 text-indigo-200 font-medium">Unlock Financial Magic</p>
               </div>
-              <div className="justify-center flex  ">
-                <button
-                  type="submit"
-                  className="w-[80%] border bg-blue-500 p-2 rounded-full "
-                >
-                  Accept and register
-                </button>
+              
+              {/* Form Fields */}
+              <div className="p-8 space-y-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Your name"
+                      className="w-full p-3 pl-4 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:border-indigo-500 outline-none transition-all duration-200"
+                      value={values.name}
+                      onChange={(e) => setValues({ ...values, name: e.target.value })}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">Email</label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      placeholder="your@email.com"
+                      className="w-full p-3 pl-4 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:border-indigo-500 outline-none transition-all duration-200"
+                      value={values.email}
+                      onChange={(e) =>
+                        setValues({ ...values, email: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">Password</label>
+                  <div className="relative">
+                    <input
+                      type="password"
+                      placeholder="6 characters minimum"
+                      className="w-full p-3 pl-4 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:border-indigo-500 outline-none transition-all duration-200"
+                      value={values.password}
+                      onChange={(e) =>
+                        setValues({ ...values, password: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+                
+                <div className="pt-2">
+                  <p className="text-sm text-gray-600 mb-4">
+                    By clicking Accept and Register, you agree to the{" "}
+                    <span className="text-blue-400 font-medium">Terms of Use</span> and the{" "}
+                    <span className="text-blue-400 font-medium">Privacy Policy</span> of Wallet Wizard
+                  </p>
+                  
+                  <button
+                    type="submit"
+                    className="w-full py-3 px-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg font-medium shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
+                    onClick={(e) => submitHandler(e)}
+                  >
+                    Accept and Register
+                  </button>
+                </div>
+                
+                <div className="text-center pt-4 text-sm">
+                  <span className="text-gray-600">Already registered? </span>
+                  <Link to="/login" className="text-blue-400 font-medium hover:text-blue-500 transition-colors duration-200">
+                    Sign In
+                  </Link>
+                </div>
               </div>
-
-              <div id="new-user" className="flex justify-center text-blue-500">
-                <div className="text-black">Already registered?</div>
-                <Link to="/login">Login</Link>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         )}
         <ToastContainer />
       </div>
